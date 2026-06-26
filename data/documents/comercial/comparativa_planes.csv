@@ -1,0 +1,9 @@
+caracteristica,Free,Pro,Business,Enterprise
+precio_usuario_mes_usd,0,9,18,Personalizado
+usuarios_incluidos,5,Ilimitado,Ilimitado,Ilimitado
+proyectos_activos,3,Ilimitado,Ilimitado,Ilimitado
+almacenamiento_gb,1,50,200,Ilimitado
+automatizaciones_mes,50,2000,10000,Ilimitado
+integraciones,Basicas,Todas,Todas,Todas + SSO
+soporte,Comunidad,Email,Email + Chat,Dedicado 24/7
+sla_uptime,No,99.5%,99.9%,99.95%

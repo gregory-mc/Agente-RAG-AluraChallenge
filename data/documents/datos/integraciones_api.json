@@ -1,0 +1,32 @@
+{
+  "servicio": "TechNova Public API & Integraciones",
+  "version": "1.4.0",
+  "base_url": "https://api.technova.com/v1",
+  "autenticacion": {
+    "tipo": "API Key / OAuth2",
+    "header": "Authorization: Bearer <token>",
+    "scopes": ["projects:read", "projects:write", "tasks:read", "tasks:write", "webhooks:manage"]
+  },
+  "rate_limit": {
+    "Free": "100/hora",
+    "Pro": "1000/hora",
+    "Business": "5000/hora",
+    "Enterprise": "personalizado"
+  },
+  "endpoints": [
+    {"metodo": "GET", "ruta": "/projects", "descripcion": "Lista proyectos del workspace"},
+    {"metodo": "POST", "ruta": "/tasks", "descripcion": "Crea una tarea"},
+    {"metodo": "PATCH", "ruta": "/tasks/{id}", "descripcion": "Actualiza estado o responsable"}
+  ],
+  "integraciones_disponibles": [
+    {"nombre": "Slack", "tipo": "notificaciones", "planes": ["Pro", "Business", "Enterprise"]},
+    {"nombre": "Google Drive", "tipo": "archivos", "planes": ["Pro", "Business", "Enterprise"]},
+    {"nombre": "GitHub", "tipo": "desarrollo", "planes": ["Business", "Enterprise"]},
+    {"nombre": "Zapier", "tipo": "automatizacion", "planes": ["Pro", "Business", "Enterprise"]}
+  ],
+  "webhooks": {
+    "eventos": ["task.created", "task.completed", "project.archived"],
+    "formato": "JSON vía HTTP POST"
+  },
+  "contacto_tecnico": "developers@technova.com"
+}
