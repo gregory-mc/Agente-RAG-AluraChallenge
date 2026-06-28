@@ -1,0 +1,13 @@
+[project]
+name = "agente-rag"
+version = "0.2.0"
+description = "Agente RAG corporativo — Challenge AluraAgente ONE IA FOR TECH"
+requires-python = ">=3.10"
+readme = "README.md"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
