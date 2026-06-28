@@ -13,6 +13,7 @@ import sys
 
 from . import config, manifest as manifest_mod
 from .extractors import supported_extensions
+from .indexer import get_indexer
 from .ingest import discover_local_sources, ingest_all
 from .sources import UrlSource
 
@@ -33,7 +34,8 @@ def _cmd_add_url(args) -> int:
 
 
 def _cmd_ingest(args) -> int:
-    results = ingest_all(force=args.force)
+    indexer = get_indexer(args.backend)
+    results = ingest_all(indexer=indexer, force=args.force)
     indexed = [r for r in results if r.status == "indexed"]
     unchanged = [r for r in results if r.status == "unchanged"]
     errors = [r for r in results if r.status == "error"]
@@ -45,9 +47,13 @@ def _cmd_ingest(args) -> int:
     for r in errors:
         print(f"✗ error      {r.source_id}: {r.detail}", file=sys.stderr)
 
+    backend = args.backend or config.INDEXER_BACKEND
+    location = config.CHROMA_DIR if backend == "chroma" else config.CHUNKS_PATH
+    embedder = getattr(indexer, "embedder", None)
+    extra = f"  Embeddings: {embedder.name}" if embedder else ""
     print(
         f"\nResumen: {len(indexed)} indexados, {len(unchanged)} sin cambios, "
-        f"{len(errors)} con error.  Índice: {config.CHUNKS_PATH}"
+        f"{len(errors)} con error.  Backend: {backend} ({location}){extra}"
     )
     return 1 if errors else 0
 
@@ -82,6 +88,28 @@ def _cmd_check(args) -> int:
     return 0
 
 
+def _cmd_search(args) -> int:
+    from .chroma_indexer import ChromaIndexer
+
+    indexer = ChromaIndexer()
+    total = indexer.count()
+    if total == 0:
+        print("El índice está vacío. Ejecutá 'ingest' primero.", file=sys.stderr)
+        return 1
+
+    where = {"category": args.category} if args.category else None
+    hits = indexer.query(args.query, n_results=args.k, where=where)
+    print(f"Consulta: {args.query!r}  (índice: {total} chunks)\n")
+    for i, hit in enumerate(hits, start=1):
+        md = hit["metadata"]
+        # distancia coseno -> similitud aproximada (a menor distancia, más relevante)
+        sim = 1 - hit["distance"]
+        snippet = " ".join(hit["text"].split())[:200]
+        print(f"{i}. [{sim:.3f}] {md.get('file')}  (categoría: {md.get('category')})")
+        print(f"   {snippet}…\n")
+    return 0
+
+
 def _cmd_list(args) -> int:
     manifest = manifest_mod.load()
     sources = manifest.get("sources", {})
@@ -110,7 +138,15 @@ def build_parser() -> argparse.ArgumentParser:
 
     p_ing = sub.add_parser("ingest", help="procesar todo; re-procesa lo que cambió")
     p_ing.add_argument("--force", action="store_true", help="re-procesar aunque no haya cambios")
+    p_ing.add_argument("--backend", choices=("chroma", "jsonl"), default=None,
+                       help="backend de indexado (por defecto: el de config)")
     p_ing.set_defaults(func=_cmd_ingest)
+
+    p_sr = sub.add_parser("search", help="buscar en el índice (búsqueda semántica)")
+    p_sr.add_argument("query", help="texto a buscar")
+    p_sr.add_argument("-k", type=int, default=5, help="cantidad de resultados")
+    p_sr.add_argument("--category", default=None, help="filtrar por categoría")
+    p_sr.set_defaults(func=_cmd_search)
 
     p_chk = sub.add_parser("check", help="reportar cambios sin re-indexar")
     p_chk.set_defaults(func=_cmd_check)

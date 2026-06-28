@@ -17,7 +17,7 @@ from . import config, manifest as manifest_mod, metadata as meta_mod
 from .chunking import chunk_text
 from .cleaning import clean_text
 from .extractors import ExtractionError, get_extractor, supported_extensions
-from .indexer import Indexer, JsonlIndexer
+from .indexer import Indexer, get_indexer
 from .models import Chunk
 from .sources import LocalSource, Source, UrlSource
 
@@ -117,7 +117,7 @@ def ingest_source(
 
 def ingest_all(*, indexer: Indexer | None = None, force: bool = False) -> list[IngestResult]:
     """Ingesta todas las fuentes (locales descubiertas + URLs registradas)."""
-    indexer = indexer or JsonlIndexer()
+    indexer = indexer or get_indexer()
     manifest = manifest_mod.load()
 
     sources: list[Source] = list(discover_local_sources())

@@ -11,6 +11,14 @@ from pathlib import Path
 # Raíz del repositorio (…/Agente-RAG-AluraChallenge)
 ROOT = Path(__file__).resolve().parents[2]
 
+# Carga variables desde .env (API keys, etc.) si está disponible.
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv(ROOT / ".env")
+except ImportError:  # python-dotenv es opcional
+    pass
+
 
 def _path_env(var: str, default: Path) -> Path:
     return Path(os.environ[var]).expanduser() if os.environ.get(var) else default
@@ -26,6 +34,24 @@ CHUNKS_PATH: Path = STATE_DIR / "chunks.jsonl"
 
 # Caché local de documentos descargados desde una URL.
 REMOTE_CACHE_DIR: Path = STATE_DIR / "remote_cache"
+
+# Indexación vectorial (issue #3).
+# Backend activo: "chroma" (base vectorial) | "jsonl" (respaldo en disco).
+INDEXER_BACKEND: str = os.environ.get("RAG_INDEXER", "chroma")
+CHROMA_DIR: Path = _path_env("RAG_CHROMA_DIR", ROOT / "chroma_db")
+CHROMA_COLLECTION: str = os.environ.get("RAG_CHROMA_COLLECTION", "documentos")
+# Proveedor de embeddings: "cohere" (API, recomendado para VM chica) |
+# "sentence-transformers" (local, sin key, pero pesado por torch).
+EMBEDDING_PROVIDER: str = os.environ.get("RAG_EMBEDDING_PROVIDER", "cohere")
+
+# Cohere (API): modelo multilingüe y key (la key NUNCA va en el repo, solo en .env/env).
+COHERE_MODEL: str = os.environ.get("RAG_COHERE_MODEL", "embed-multilingual-v3.0")
+COHERE_API_KEY: str | None = os.environ.get("COHERE_API_KEY")
+
+# Modelo de embeddings local (alternativa sentence-transformers, multiidioma).
+EMBEDDING_MODEL: str = os.environ.get(
+    "RAG_EMBEDDING_MODEL", "paraphrase-multilingual-MiniLM-L12-v2"
+)
 
 # Parámetros de chunking (en caracteres; el tokenizado real llega en issue #3/#4).
 CHUNK_SIZE: int = int(os.environ.get("RAG_CHUNK_SIZE", "1000"))

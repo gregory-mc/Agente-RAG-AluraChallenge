@@ -8,3 +8,11 @@ beautifulsoup4>=4.12.0 # HTML
 lxml>=5.2.0            # parser para BeautifulSoup
 # Fuentes remotas
 requests>=2.31.0       # fetch de documentos online (URL)
+
+# Issue #3 — Indexación (set de DEPLOY: embeddings por API, liviano, sin torch)
+chromadb>=0.5.0        # base vectorial con índice HNSW + filtro por metadatos
+python-dotenv>=1.0.0   # carga de API keys desde .env
+cohere>=5.0.0          # API de embeddings multilingüe (embed-multilingual-v3.0)
+
+# Embeddings LOCALES (alternativa offline sin API) -> ver requirements-local.txt
+# No se instala acá para mantener la VM liviana y evitar el conflicto con torch.

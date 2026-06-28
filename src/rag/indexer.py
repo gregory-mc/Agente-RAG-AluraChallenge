@@ -30,6 +30,22 @@ class Indexer(ABC):
         """Agrega chunks al índice. Devuelve cuántos agregó."""
 
 
+def get_indexer(backend: str | None = None) -> "Indexer":
+    """Devuelve el indexador según el backend configurado.
+
+    "chroma" -> ChromaIndexer (base vectorial, importación perezosa por las
+    dependencias pesadas). "jsonl" -> JsonlIndexer (respaldo en disco).
+    """
+    backend = (backend or config.INDEXER_BACKEND).lower()
+    if backend == "chroma":
+        from .chroma_indexer import ChromaIndexer
+
+        return ChromaIndexer()
+    if backend == "jsonl":
+        return JsonlIndexer()
+    raise ValueError(f"Backend de indexado desconocido: {backend!r} (usá 'chroma' o 'jsonl')")
+
+
 class JsonlIndexer(Indexer):
     """Índice de respaldo en un archivo JSONL (un chunk por línea)."""
 

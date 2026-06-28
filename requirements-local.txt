@@ -1,0 +1,11 @@
+# Embeddings LOCALES (opcional) — alternativa offline sin API key.
+# Pesado: instala PyTorch (~GB) y necesita ~1.5 GB de RAM al responder, por lo que
+# NO entra en una VM de 1 GB (ver docs/03). Usalo solo para desarrollo local con
+# RAG_EMBEDDING_PROVIDER=sentence-transformers.
+#
+# Nota: cohere y sentence-transformers pueden chocar por la versión de `tokenizers`.
+# Para usar el embedder local conviene un entorno aparte (sin cohere) o fijar
+# versiones compatibles de transformers/tokenizers.
+
+-r requirements.txt
+sentence-transformers>=2.7.0   # paraphrase-multilingual-MiniLM-L12-v2
