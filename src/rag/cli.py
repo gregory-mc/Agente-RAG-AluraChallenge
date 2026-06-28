@@ -110,6 +110,32 @@ def _cmd_search(args) -> int:
     return 0
 
 
+def _cmd_retrieve(args) -> int:
+    from .retrieval import Retriever
+
+    retriever = Retriever()
+    where = {"category": args.category} if args.category else None
+    result = retriever.retrieve(args.query, top_k=args.k, where=where)
+
+    if not result.chunks:
+        print("Sin resultados. ¿Indexaste con 'ingest'?", file=sys.stderr)
+        return 1
+
+    print(f"Consulta: {result.query!r}")
+    print(f"Reranker: {retriever.reranker.name}\n")
+    print("Fragmentos recuperados (tras reranking):")
+    for i, chunk in enumerate(result.chunks, start=1):
+        score = f"{chunk.rerank_score:.3f}" if chunk.rerank_score is not None else "—"
+        snippet = " ".join(chunk.text.split())[:160]
+        print(f"  {i}. [rerank {score}] {chunk.metadata.get('file')} ({chunk.metadata.get('category')})")
+        print(f"     {snippet}…")
+
+    if args.context:
+        print("\n--- Contexto ensamblado (para el generador, issue #5) ---")
+        print(result.context)
+    return 0
+
+
 def _cmd_list(args) -> int:
     manifest = manifest_mod.load()
     sources = manifest.get("sources", {})
@@ -142,11 +168,18 @@ def build_parser() -> argparse.ArgumentParser:
                        help="backend de indexado (por defecto: el de config)")
     p_ing.set_defaults(func=_cmd_ingest)
 
-    p_sr = sub.add_parser("search", help="buscar en el índice (búsqueda semántica)")
+    p_sr = sub.add_parser("search", help="búsqueda vectorial cruda (sin reranking)")
     p_sr.add_argument("query", help="texto a buscar")
     p_sr.add_argument("-k", type=int, default=5, help="cantidad de resultados")
     p_sr.add_argument("--category", default=None, help="filtrar por categoría")
     p_sr.set_defaults(func=_cmd_search)
+
+    p_rt = sub.add_parser("retrieve", help="recuperación completa (vector + rerank + contexto)")
+    p_rt.add_argument("query", help="pregunta")
+    p_rt.add_argument("-k", type=int, default=config.RETRIEVAL_TOP_K, help="fragmentos finales")
+    p_rt.add_argument("--category", default=None, help="filtrar por categoría")
+    p_rt.add_argument("--context", action="store_true", help="mostrar el contexto ensamblado")
+    p_rt.set_defaults(func=_cmd_retrieve)
 
     p_chk = sub.add_parser("check", help="reportar cambios sin re-indexar")
     p_chk.set_defaults(func=_cmd_check)

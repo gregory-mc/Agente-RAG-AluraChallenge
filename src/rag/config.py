@@ -60,6 +60,17 @@ CHUNK_OVERLAP: int = int(os.environ.get("RAG_CHUNK_OVERLAP", "150"))
 # Timeout de descarga de documentos online.
 HTTP_TIMEOUT: int = int(os.environ.get("RAG_HTTP_TIMEOUT", "30"))
 
+# Recuperación (issue #4).
+# Proveedor de reranking: "cohere" (API, más preciso) | "none" (sin rerank).
+RERANK_PROVIDER: str = os.environ.get("RAG_RERANK_PROVIDER", "cohere")
+RERANK_MODEL: str = os.environ.get("RAG_RERANK_MODEL", "rerank-multilingual-v3.0")
+# Candidatos que trae la búsqueda vectorial antes de reordenar (velocidad).
+RETRIEVAL_CANDIDATES: int = int(os.environ.get("RAG_RETRIEVAL_CANDIDATES", "20"))
+# Fragmentos finales que quedan tras el reranking (calidad).
+RETRIEVAL_TOP_K: int = int(os.environ.get("RAG_RETRIEVAL_TOP_K", "5"))
+# Tamaño máximo del contexto ensamblado (en caracteres).
+CONTEXT_MAX_CHARS: int = int(os.environ.get("RAG_CONTEXT_MAX_CHARS", "4000"))
+
 
 def ensure_state_dirs() -> None:
     """Crea las carpetas de estado si no existen."""
