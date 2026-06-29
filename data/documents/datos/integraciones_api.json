@@ -1,32 +1,59 @@
 {
   "servicio": "TechNova Public API & Integraciones",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "base_url": "https://api.technova.com/v1",
   "autenticacion": {
     "tipo": "API Key / OAuth2",
     "header": "Authorization: Bearer <token>",
-    "scopes": ["projects:read", "projects:write", "tasks:read", "tasks:write", "webhooks:manage"]
+    "scopes": ["projects:read", "projects:write", "tasks:read", "tasks:write", "users:read", "webhooks:manage"],
+    "nota": "El acceso a la API está disponible desde el plan Pro en adelante."
   },
   "rate_limit": {
-    "Free": "100/hora",
+    "Free": "sin acceso",
+    "Starter": "sin acceso",
     "Pro": "1000/hora",
     "Business": "5000/hora",
     "Enterprise": "personalizado"
   },
+  "paginacion": {
+    "parametros": ["page", "per_page"],
+    "per_page_default": 50,
+    "per_page_max": 200
+  },
   "endpoints": [
-    {"metodo": "GET", "ruta": "/projects", "descripcion": "Lista proyectos del workspace"},
+    {"metodo": "GET", "ruta": "/projects", "descripcion": "Lista los proyectos del workspace"},
+    {"metodo": "POST", "ruta": "/projects", "descripcion": "Crea un proyecto"},
+    {"metodo": "GET", "ruta": "/projects/{id}", "descripcion": "Obtiene el detalle de un proyecto"},
+    {"metodo": "GET", "ruta": "/tasks", "descripcion": "Lista tareas, filtrables por proyecto, estado o responsable"},
     {"metodo": "POST", "ruta": "/tasks", "descripcion": "Crea una tarea"},
-    {"metodo": "PATCH", "ruta": "/tasks/{id}", "descripcion": "Actualiza estado o responsable"}
+    {"metodo": "PATCH", "ruta": "/tasks/{id}", "descripcion": "Actualiza estado, responsable o fecha límite"},
+    {"metodo": "DELETE", "ruta": "/tasks/{id}", "descripcion": "Elimina una tarea"},
+    {"metodo": "GET", "ruta": "/users", "descripcion": "Lista los miembros del workspace"},
+    {"metodo": "POST", "ruta": "/webhooks", "descripcion": "Registra un endpoint para recibir eventos"}
   ],
+  "codigos_error": {
+    "400": "Solicitud inválida",
+    "401": "Token ausente o inválido",
+    "403": "Sin permisos para el recurso",
+    "404": "Recurso no encontrado",
+    "429": "Límite de tasa excedido",
+    "500": "Error interno del servidor"
+  },
   "integraciones_disponibles": [
-    {"nombre": "Slack", "tipo": "notificaciones", "planes": ["Pro", "Business", "Enterprise"]},
-    {"nombre": "Google Drive", "tipo": "archivos", "planes": ["Pro", "Business", "Enterprise"]},
-    {"nombre": "GitHub", "tipo": "desarrollo", "planes": ["Business", "Enterprise"]},
-    {"nombre": "Zapier", "tipo": "automatizacion", "planes": ["Pro", "Business", "Enterprise"]}
+    {"nombre": "Slack", "tipo": "notificaciones", "planes": ["Pro", "Business", "Enterprise"], "descripcion": "Avisos de tareas y menciones en canales de Slack"},
+    {"nombre": "Google Drive", "tipo": "archivos", "planes": ["Pro", "Business", "Enterprise"], "descripcion": "Adjuntar y previsualizar archivos de Drive en las tareas"},
+    {"nombre": "GitHub", "tipo": "desarrollo", "planes": ["Business", "Enterprise"], "descripcion": "Vincular commits y pull requests a tareas"},
+    {"nombre": "Zapier", "tipo": "automatizacion", "planes": ["Pro", "Business", "Enterprise"], "descripcion": "Conectar TechNova con miles de apps sin código"},
+    {"nombre": "Microsoft Teams", "tipo": "notificaciones", "planes": ["Business", "Enterprise"], "descripcion": "Notificaciones y comandos desde Teams"},
+    {"nombre": "Outlook Calendar", "tipo": "calendario", "planes": ["Business", "Enterprise"], "descripcion": "Sincronizar fechas límite con el calendario"},
+    {"nombre": "Jira", "tipo": "desarrollo", "planes": ["Enterprise"], "descripcion": "Sincronización bidireccional de incidencias"}
   ],
   "webhooks": {
-    "eventos": ["task.created", "task.completed", "project.archived"],
-    "formato": "JSON vía HTTP POST"
+    "eventos": ["task.created", "task.updated", "task.completed", "task.deleted", "project.created", "project.archived", "member.invited"],
+    "formato": "JSON vía HTTP POST",
+    "seguridad": "Cada evento incluye una firma HMAC-SHA256 en el header X-TechNova-Signature",
+    "reintentos": "Hasta 5 reintentos con backoff exponencial si el endpoint no responde 2xx"
   },
+  "sdks": ["JavaScript/Node", "Python", "Go"],
   "contacto_tecnico": "developers@technova.com"
 }

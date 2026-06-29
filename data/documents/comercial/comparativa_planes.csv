@@ -1,9 +1,28 @@
-caracteristica,Free,Pro,Business,Enterprise
-precio_usuario_mes_usd,0,9,18,Personalizado
-usuarios_incluidos,5,Ilimitado,Ilimitado,Ilimitado
-proyectos_activos,3,Ilimitado,Ilimitado,Ilimitado
-almacenamiento_gb,1,50,200,Ilimitado
-automatizaciones_mes,50,2000,10000,Ilimitado
-integraciones,Basicas,Todas,Todas,Todas + SSO
-soporte,Comunidad,Email,Email + Chat,Dedicado 24/7
-sla_uptime,No,99.5%,99.9%,99.95%
+caracteristica,Free,Starter,Pro,Business,Enterprise
+precio_usuario_mes_usd,0,5,9,18,Personalizado
+precio_usuario_anio_usd,0,50,90,180,Personalizado
+descuento_pago_anual,0%,17%,17%,17%,Negociable
+usuarios_incluidos,5,15,Ilimitado,Ilimitado,Ilimitado
+proyectos_activos,3,20,Ilimitado,Ilimitado,Ilimitado
+tareas_por_proyecto,100,1000,Ilimitado,Ilimitado,Ilimitado
+almacenamiento_gb,1,10,50,200,Ilimitado
+automatizaciones_mes,50,500,2000,10000,Ilimitado
+vistas_disponibles,Kanban/Lista,Kanban/Lista/Calendario,+Calendario/Gantt,Todas,Todas + personalizadas
+invitados_externos,No,3,5,20,Ilimitado
+historial_actividad,7 dias,30 dias,1 anio,Ilimitado,Ilimitado
+roles_personalizados,No,No,No,Si,Si
+acceso_api,No,No,Si (1000/h),Si (5000/h),Personalizado
+webhooks,No,No,Si,Si,Si
+reportes,No,Basicos,Basicos,Avanzados,Avanzados + BI
+exportacion_datos,No,CSV,CSV,CSV/Excel,CSV/Excel/API
+integraciones,Basicas,Basicas,Todas,Todas,Todas + SSO
+soporte,Comunidad,Email,Email,Email + Chat,Dedicado 24/7
+tiempo_respuesta_soporte,No,72 h,48 h,8 h,1 h (SLA)
+sla_uptime,No,99.0%,99.5%,99.9%,99.95%
+onboarding,Autoservicio,Autoservicio,Autoservicio,Guiado,Dedicado + CSM
+verificacion_2fa,Si,Si,Si,Si,Si
+sso_saml,No,No,No,Add-on,Incluido
+registros_auditoria,No,No,No,90 dias,Ilimitado
+facturacion,Tarjeta,Tarjeta,Tarjeta,Tarjeta/Transferencia,Factura/Orden de compra
+app_movil,Si,Si,Si,Si,Si
+publico_objetivo,Equipos que inician,Equipos pequenos,Equipos en crecimiento,Empresas con varios equipos,Grandes organizaciones

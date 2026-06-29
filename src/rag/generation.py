@@ -108,7 +108,10 @@ class CohereGenerator(Generator):
         text, suggestions = _split_followups(raw)
         latency = int((time.perf_counter() - start) * 1000)
         no_answer = self._looks_like_no_answer(text)
-        sources = [] if no_answer else _cited_sources(text, retrieval.sources)
+        if no_answer:
+            sources = []
+        else:
+            text, sources = _remap_citations(text, retrieval.sources)
         return Answer(
             text=text,
             sources=sources,
@@ -158,20 +161,37 @@ def _split_followups(raw: str) -> tuple[str, list[str]]:
 _CITE_RE = re.compile(r"\[(\d+(?:\s*,\s*\d+)*)\]")
 
 
-def _cited_sources(text: str, all_sources: list[str]) -> list[str]:
-    """Devuelve solo las fuentes efectivamente citadas con [n] en la respuesta.
+def _remap_citations(text: str, all_sources: list[str]) -> tuple[str, list[str]]:
+    """Deja solo las fuentes citadas y renumera para que el texto y la lista coincidan.
 
-    Mapea cada marcador ``[n]`` (admite ``[1,2]``) a `all_sources[n-1]`,
-    conservando el orden de aparición y sin repetir. Si el modelo no citó nada,
-    cae a todas las fuentes recuperadas (mejor mostrar de más que de menos).
+    El modelo cita ``[n]`` según el orden del CONTEXTO, pero a la UI solo le
+    mostramos las fuentes efectivamente citadas. Para que el ``[n]`` del texto
+    apunte a la misma posición de la lista, se renumeran ambos: la primera fuente
+    citada pasa a ser [1], la segunda [2], etc. Si el modelo no citó nada, se cae
+    a todas las fuentes recuperadas sin tocar el texto.
     """
+    order: dict[int, int] = {}          # índice original (0-based) -> nuevo número
+    by_source: dict[str, int] = {}      # fuente -> nuevo número (dedup por archivo)
     cited: list[str] = []
     for group in _CITE_RE.findall(text):
         for num in group.split(","):
             idx = int(num.strip()) - 1
-            if 0 <= idx < len(all_sources) and all_sources[idx] not in cited:
-                cited.append(all_sources[idx])
-    return cited or list(all_sources)
+            if not (0 <= idx < len(all_sources)) or idx in order:
+                continue
+            src = all_sources[idx]
+            if src not in by_source:            # primera vez que aparece este archivo
+                by_source[src] = len(cited) + 1
+                cited.append(src)
+            order[idx] = by_source[src]
+    if not cited:
+        return text, list(all_sources)
+
+    def _sub(match: re.Match) -> str:
+        nums = sorted({str(order[int(n) - 1]) for n in match.group(1).split(",")
+                       if int(n) - 1 in order})
+        return "[" + ",".join(nums) + "]" if nums else ""
+
+    return _CITE_RE.sub(_sub, text), cited
 
 
 def _extract_text(resp) -> str:
