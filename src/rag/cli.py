@@ -136,6 +136,46 @@ def _cmd_retrieve(args) -> int:
     return 0
 
 
+def _cmd_ask(args) -> int:
+    from .answering import RagAgent
+
+    agent = RagAgent()
+    result = agent.answer(args.query, category=args.category)
+
+    conf = f"{result.confidence:.3f}" if result.confidence is not None else "—"
+    print(f"Pregunta: {args.query!r}")
+    print(f"Modelo: {result.model}  |  Confianza: {conf}\n")
+    print(result.text)
+    if result.sources:
+        print("\nFuentes:")
+        for i, src in enumerate(result.sources, start=1):
+            print(f"  [{i}] {src}")
+    return 0
+
+
+def _cmd_serve(args) -> int:
+    try:
+        import uvicorn
+    except ImportError:
+        print("Falta dependencia: uvicorn (pip install -r requirements.txt)", file=sys.stderr)
+        return 1
+    print(f"Levantando la interfaz web en http://{args.host}:{args.port}  (Ctrl-C para salir)")
+    uvicorn.run("rag.web.app:app", host=args.host, port=args.port, reload=args.reload)
+    return 0
+
+
+def _cmd_metrics(args) -> int:
+    from . import observability
+
+    data = observability.metrics()
+    print("Métricas de mantenimiento (issue #6):")
+    print(f"  Preguntas totales   : {data['total_questions']}")
+    print(f"  Sin respuesta       : {data['unanswered']} ({data['unanswered_rate']:.0%})")
+    print(f"  Feedback 👍 / 👎     : {data['feedback_positive']} / {data['feedback_negative']}")
+    print(f"  Latencia media (ms) : {data['avg_latency_ms']}")
+    return 0
+
+
 def _cmd_list(args) -> int:
     manifest = manifest_mod.load()
     sources = manifest.get("sources", {})
@@ -180,6 +220,20 @@ def build_parser() -> argparse.ArgumentParser:
     p_rt.add_argument("--category", default=None, help="filtrar por categoría")
     p_rt.add_argument("--context", action="store_true", help="mostrar el contexto ensamblado")
     p_rt.set_defaults(func=_cmd_retrieve)
+
+    p_ask = sub.add_parser("ask", help="preguntar al agente (recuperación + generación)")
+    p_ask.add_argument("query", help="pregunta")
+    p_ask.add_argument("--category", default=None, help="filtrar por categoría")
+    p_ask.set_defaults(func=_cmd_ask)
+
+    p_srv = sub.add_parser("serve", help="levantar la interfaz web de chat")
+    p_srv.add_argument("--host", default="0.0.0.0", help="host de escucha")
+    p_srv.add_argument("--port", type=int, default=8000, help="puerto")
+    p_srv.add_argument("--reload", action="store_true", help="recarga en caliente (dev)")
+    p_srv.set_defaults(func=_cmd_serve)
+
+    p_met = sub.add_parser("metrics", help="resumen de mantenimiento (preguntas, feedback)")
+    p_met.set_defaults(func=_cmd_metrics)
 
     p_chk = sub.add_parser("check", help="reportar cambios sin re-indexar")
     p_chk.set_defaults(func=_cmd_check)

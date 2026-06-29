@@ -7,6 +7,8 @@ env/
 .env
 chroma_db/
 data/state/
+data/logs/
+data/feedback/
 *.egg-info/
 .pytest_cache/
 .DS_Store

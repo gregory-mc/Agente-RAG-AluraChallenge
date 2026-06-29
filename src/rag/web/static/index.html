@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Agente RAG corporativo</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <span class="logo" aria-hidden="true">📚</span>
+        <div>
+          <h1>Agente RAG corporativo</h1>
+          <p class="subtitle">Respuestas basadas en los documentos internos</p>
+        </div>
+      </div>
+      <button id="clear" class="ghost" title="Vaciar conversación">Nueva conversación</button>
+    </header>
+
+    <div class="ai-notice" role="note">
+      🤖 Sos un asistente de <strong>IA</strong>. Las respuestas se generan a partir de
+      documentos internos y pueden contener errores: verificá las fuentes citadas.
+    </div>
+
+    <main id="chat" class="chat" aria-live="polite">
+      <div class="empty" id="empty">
+        <p>Hacé una pregunta sobre los documentos de la empresa.</p>
+        <div class="suggestions">
+          <button class="chip suggestion">¿Qué incluye el plan Business?</button>
+          <button class="chip suggestion">¿Cómo es el soporte para empresas grandes?</button>
+          <button class="chip suggestion">¿Con qué herramientas se integra?</button>
+        </div>
+      </div>
+    </main>
+
+    <form id="composer" class="composer" autocomplete="off">
+      <input id="input" type="text" placeholder="Escribí tu pregunta…" aria-label="Pregunta" />
+      <button id="send" type="submit">Enviar</button>
+    </form>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>

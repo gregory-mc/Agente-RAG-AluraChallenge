@@ -71,6 +71,25 @@ RETRIEVAL_TOP_K: int = int(os.environ.get("RAG_RETRIEVAL_TOP_K", "5"))
 # Tamaño máximo del contexto ensamblado (en caracteres).
 CONTEXT_MAX_CHARS: int = int(os.environ.get("RAG_CONTEXT_MAX_CHARS", "4000"))
 
+# Generación (issue #5).
+# Proveedor: "cohere" (API, Command-R) | "echo" (sin LLM, dev/tests).
+GENERATION_PROVIDER: str = os.environ.get("RAG_GENERATION_PROVIDER", "cohere")
+GEN_MODEL: str = os.environ.get("RAG_GEN_MODEL", "command-r-08-2024")
+GEN_TEMPERATURE: float = float(os.environ.get("RAG_GEN_TEMPERATURE", "0.2"))
+# Confianza mínima (similitud vectorial del mejor fragmento) para llamar al LLM.
+# Por debajo de este umbral, el agente responde "no sé" en vez de arriesgar.
+# Referencia empírica: ~0.56 en preguntas dentro del corpus, ~0.34 fuera.
+CONFIDENCE_MIN: float = float(os.environ.get("RAG_CONFIDENCE_MIN", "0.4"))
+# Mensaje exacto cuando no hay información suficiente en los documentos.
+NO_ANSWER_MESSAGE: str = os.environ.get(
+    "RAG_NO_ANSWER_MESSAGE",
+    "No encontré esa información en los documentos disponibles.",
+)
+
+# Observabilidad / mantenimiento (issue #6).
+LOG_DIR: Path = _path_env("RAG_LOG_DIR", ROOT / "data" / "logs")
+FEEDBACK_DIR: Path = _path_env("RAG_FEEDBACK_DIR", ROOT / "data" / "feedback")
+
 
 def ensure_state_dirs() -> None:
     """Crea las carpetas de estado si no existen."""

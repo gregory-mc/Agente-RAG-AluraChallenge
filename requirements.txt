@@ -14,5 +14,12 @@ chromadb>=0.5.0        # base vectorial con índice HNSW + filtro por metadatos
 python-dotenv>=1.0.0   # carga de API keys desde .env
 cohere>=5.0.0          # API de embeddings multilingüe (embed-multilingual-v3.0)
 
+# Issue #5 — Generación
+# (sin dependencia nueva: se reutiliza el SDK `cohere` para chat con Command-R)
+
+# Issue #6 — Interfaz web + mantenimiento
+fastapi>=0.110.0       # API HTTP del agente
+uvicorn>=0.30.0        # servidor ASGI liviano (apto para VM chica de OCI)
+
 # Embeddings LOCALES (alternativa offline sin API) -> ver requirements-local.txt
 # No se instala acá para mantener la VM liviana y evitar el conflicto con torch.
