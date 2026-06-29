@@ -172,11 +172,13 @@ def _cmd_metrics(args) -> int:
     from . import observability
 
     data = observability.metrics()
-    print("Métricas de mantenimiento (issue #6):")
+    print("Métricas de ejecución (issues #6/#8):")
     print(f"  Preguntas totales   : {data['total_questions']}")
     print(f"  Sin respuesta       : {data['unanswered']} ({data['unanswered_rate']:.0%})")
     print(f"  Feedback 👍 / 👎     : {data['feedback_positive']} / {data['feedback_negative']}")
-    print(f"  Latencia media (ms) : {data['avg_latency_ms']}")
+    print(f"  Latencia media/p95  : {data['avg_latency_ms']} / {data['p95_latency_ms']} ms")
+    print(f"  Tokens (acumulado)  : {data['total_tokens']}")
+    print(f"  Errores             : {data['errors']}")
     return 0
 
 

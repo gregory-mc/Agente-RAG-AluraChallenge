@@ -3,10 +3,16 @@
 # así el contenedor es stateless y apto para OCI Container Instances.
 FROM python:3.12-slim
 
+# Metadatos de build inyectados por el CI (issue #8: saber qué commit corre).
+ARG GIT_SHA=dev
+ARG APP_VERSION=0.4.0
+
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONPATH=/app/src \
-    PORT=8000
+    PORT=8000 \
+    GIT_SHA=$GIT_SHA \
+    APP_VERSION=$APP_VERSION
 
 WORKDIR /app
 

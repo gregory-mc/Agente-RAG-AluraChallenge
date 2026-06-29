@@ -14,28 +14,42 @@ entre requests. El historial de conversación se guarda en memoria por
 """
 from __future__ import annotations
 
+import time
 import uuid
 from pathlib import Path
 from threading import Lock
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
-from .. import observability
+from .. import config, generation, observability
 from ..answering import RagAgent
 
 STATIC_DIR = Path(__file__).resolve().parent / "static"
 
-app = FastAPI(title="Techie - Asistente", version="0.3.0")
+app = FastAPI(title="Techie - Asistente", version=config.APP_VERSION)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    """Traza cada request a la API (latencia + status) para la nube (issue #8)."""
+    start = time.perf_counter()
+    response = await call_next(request)
+    if request.url.path.startswith("/api"):
+        observability.log_request(
+            request.method, request.url.path, response.status_code,
+            int((time.perf_counter() - start) * 1000),
+        )
+    return response
 
 # --- Agente (lazy singleton): se construye en el primer uso, no al importar. ---
 _agent: RagAgent | None = None
@@ -91,6 +105,7 @@ def ask(req: AskRequest) -> AskResponse:
     try:
         answer = get_agent().answer(question, category=req.category)
     except Exception as exc:  # noqa: BLE001 — exponer un error legible al cliente
+        observability.log_error("ask", exc, conversation_id=conversation_id)
         raise HTTPException(status_code=502, detail=f"Error del agente: {exc}") from exc
 
     history = _conversations.setdefault(conversation_id, [])
@@ -134,6 +149,21 @@ def metrics() -> dict:
     return observability.metrics()
 
 
+@app.get("/api/version")
+def version() -> dict:
+    """Qué está corriendo: versión, commit, modelos y versión de prompt (issue #8)."""
+    return {
+        "app_version": config.APP_VERSION,
+        "git_sha": config.GIT_SHA,
+        "models": {
+            "embedding": f"{config.EMBEDDING_PROVIDER}:{config.COHERE_MODEL}",
+            "rerank": f"{config.RERANK_PROVIDER}:{config.RERANK_MODEL}",
+            "generation": f"{config.GENERATION_PROVIDER}:{config.GEN_MODEL}",
+        },
+        "prompt_version": generation.PROMPT_VERSION,
+    }
+
+
 @app.get("/api/health")
 def health() -> dict:
     return {"status": "ok"}
@@ -142,6 +172,12 @@ def health() -> dict:
 @app.get("/")
 def index() -> FileResponse:
     return FileResponse(STATIC_DIR / "index.html")
+
+
+@app.get("/panel")
+def panel() -> FileResponse:
+    """Panel de observabilidad (métricas en vivo)."""
+    return FileResponse(STATIC_DIR / "panel.html")
 
 
 # Recursos estáticos (CSS/JS). Va al final para no tapar las rutas /api.

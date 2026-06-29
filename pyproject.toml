@@ -1,7 +1,7 @@
 [project]
 name = "agente-rag"
-version = "0.2.0"
-description = "Agente RAG corporativo — Challenge AluraAgente ONE IA FOR TECH"
+version = "0.4.0"
+description = "Techie — asistente RAG de TechNova (Challenge AluraAgente ONE IA FOR TECH)"
 requires-python = ">=3.10"
 readme = "README.md"
 

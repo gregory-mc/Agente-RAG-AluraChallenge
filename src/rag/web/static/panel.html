@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Panel · Techie (TechNova)</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <style>
+    :root{--ink:#14152b;--muted:#6b7390;--line:#ececf6;--b1:#6366f1;--b2:#a855f7;
+      --grad:linear-gradient(135deg,#6366f1,#a855f7);--ok:#10b981;--warn:#f59e0b;--danger:#ef4444}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:"Inter",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--ink);
+      background:radial-gradient(1000px 500px at 10% -10%,#dfe3ff,transparent 55%),
+      radial-gradient(900px 600px at 110% 0,#f3e4ff,transparent 50%),linear-gradient(180deg,#eef1ff,#f7f5ff);min-height:100dvh}
+    .wrap{max-width:960px;margin:0 auto;padding:24px 18px 40px}
+    .bar{height:4px;background:var(--grad);border-radius:4px;margin-bottom:18px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px;flex-wrap:wrap}
+    .brand{display:flex;align-items:center;gap:10px}
+    .brand h1{font-size:18px;margin:0;letter-spacing:-.02em}
+    .brand .sub{font-size:12.5px;color:var(--muted)}
+    .nav a{font-size:13px;color:var(--b1);text-decoration:none;border:1px solid var(--line);background:#fff;
+      padding:8px 14px;border-radius:999px;font-weight:600}
+    .nav a:hover{border-color:#d6d8f7}
+    .updated{font-size:11.5px;color:var(--muted);margin:10px 2px 16px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px}
+    .card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px 18px;box-shadow:0 8px 24px rgba(76,70,160,.08)}
+    .card .label{font-size:12px;color:var(--muted);margin-bottom:6px}
+    .card .value{font-size:26px;font-weight:800;letter-spacing:-.02em}
+    .card .value small{font-size:14px;font-weight:600;color:var(--muted)}
+    .value.ok{color:var(--ok)} .value.warn{color:var(--warn)} .value.danger{color:var(--danger)}
+    .section{margin-top:26px;font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+    .meta{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px 18px;margin-top:10px;font-size:13.5px}
+    .meta div{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid #f4f5fb}
+    .meta div:last-child{border-bottom:0}
+    .meta b{font-weight:700}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;color:var(--ink)}
+    .logo{width:34px;height:34px;border-radius:10px;background:var(--grad);display:grid;place-items:center;color:#fff}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="bar"></div>
+    <header>
+      <div class="brand">
+        <span class="logo" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="18" height="18"><path d="M12 1.5l2.2 7 7 2.2-7 2.2-2.2 7-2.2-7-7-2.2 7-2.2z" fill="#fff"/></svg>
+        </span>
+        <div>
+          <h1>Panel de observabilidad</h1>
+          <div class="sub">Techie · TechNova — registro de ejecución</div>
+        </div>
+      </div>
+      <div class="nav"><a href="/">← Volver al chat</a></div>
+    </header>
+    <p class="updated" id="updated">Cargando métricas…</p>
+
+    <div class="grid" id="cards"></div>
+
+    <div class="section">Versión en ejecución</div>
+    <div class="meta" id="meta"></div>
+  </div>
+
+  <script>
+    const cards = document.getElementById("cards");
+    const meta = document.getElementById("meta");
+    const updated = document.getElementById("updated");
+
+    function card(label, value, sub, cls) {
+      return `<div class="card"><div class="label">${label}</div>
+        <div class="value ${cls||''}">${value}${sub?` <small>${sub}</small>`:''}</div></div>`;
+    }
+    function row(k, v) { return `<div><span>${k}</span><b class="mono">${v}</b></div>`; }
+
+    async function load() {
+      try {
+        const [m, v] = await Promise.all([
+          fetch("/api/metrics").then(r => r.json()),
+          fetch("/api/version").then(r => r.json()),
+        ]);
+        const unansPct = Math.round((m.unanswered_rate || 0) * 100);
+        cards.innerHTML =
+          card("Preguntas totales", m.total_questions) +
+          card("Sin respuesta", `${m.unanswered}`, `${unansPct}%`, unansPct > 30 ? "warn" : "") +
+          card("Feedback 👍", m.feedback_positive, null, "ok") +
+          card("Feedback 👎", m.feedback_negative, null, m.feedback_negative > 0 ? "danger" : "") +
+          card("Latencia media", m.avg_latency_ms, "ms") +
+          card("Latencia p95", m.p95_latency_ms, "ms") +
+          card("Tokens (acum.)", m.total_tokens) +
+          card("Errores", m.errors, null, m.errors > 0 ? "danger" : "ok");
+        meta.innerHTML =
+          row("App", `v${v.app_version}`) +
+          row("Commit", v.git_sha) +
+          row("Embeddings", v.models.embedding) +
+          row("Reranking", v.models.rerank) +
+          row("Generación", v.models.generation) +
+          row("Prompt", v.prompt_version);
+        updated.textContent = "Actualizado " + new Date().toLocaleTimeString() + " · se refresca cada 5 s";
+      } catch (e) {
+        updated.textContent = "No se pudieron cargar las métricas: " + e.message;
+      }
+    }
+    load();
+    setInterval(load, 5000);
+  </script>
+</body>
+</html>

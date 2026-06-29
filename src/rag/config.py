@@ -86,9 +86,15 @@ NO_ANSWER_MESSAGE: str = os.environ.get(
     "No encontré esa información en los documentos disponibles.",
 )
 
-# Observabilidad / mantenimiento (issue #6).
+# Observabilidad / mantenimiento (issues #6 y #8).
 LOG_DIR: Path = _path_env("RAG_LOG_DIR", ROOT / "data" / "logs")
 FEEDBACK_DIR: Path = _path_env("RAG_FEEDBACK_DIR", ROOT / "data" / "feedback")
+# Emitir cada evento como JSON a stdout para que la nube (OCI Logging) lo capture
+# del contenedor. Se puede apagar en local con RAG_LOG_STDOUT=0.
+LOG_STDOUT: bool = os.environ.get("RAG_LOG_STDOUT", "1") not in ("0", "false", "")
+# Versión de la app y commit (los inyecta el deploy; sirven para auditar qué corrió).
+APP_VERSION: str = os.environ.get("APP_VERSION", "0.4.0")
+GIT_SHA: str = os.environ.get("GIT_SHA", "dev")
 
 
 def ensure_state_dirs() -> None:

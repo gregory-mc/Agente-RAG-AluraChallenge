@@ -24,6 +24,10 @@ from .retrieval import RetrievalResult
 # Marcador que separa la respuesta de las sugerencias de seguimiento.
 FOLLOWUP_MARKER = "###SIGUIENTES###"
 
+# Versión del prompt: se registra en cada respuesta para auditar qué generó qué
+# (issue #8). Subila cuando cambies SYSTEM_PROMPT.
+PROMPT_VERSION = "2026-06-v2"
+
 # Instrucciones anti-alucinación + tono. El modelo queda "anclado" al contexto.
 SYSTEM_PROMPT = (
     "Sos un asistente corporativo cálido y servicial que ayuda a los "
@@ -58,6 +62,8 @@ class Answer:
     confidence: float | None = None
     no_answer: bool = False
     model: str = ""
+    prompt_version: str = PROMPT_VERSION
+    tokens: int | None = None
     latency_ms: int = 0
 
 
@@ -118,6 +124,7 @@ class CohereGenerator(Generator):
             suggestions=suggestions,
             no_answer=no_answer,
             model=self.name,
+            tokens=_extract_tokens(resp),
             latency_ms=latency,
         )
 
@@ -201,6 +208,20 @@ def _extract_text(resp) -> str:
         return str(resp)
     content = getattr(msg, "content", None) or []
     return "".join(getattr(block, "text", "") or "" for block in content)
+
+
+def _extract_tokens(resp) -> int | None:
+    """Tokens totales facturados por la llamada (para métricas de costo, issue #8)."""
+    usage = getattr(resp, "usage", None)
+    units = getattr(usage, "billed_units", None) or getattr(usage, "tokens", None)
+    if units is None:
+        return None
+    total = 0
+    for attr in ("input_tokens", "output_tokens"):
+        val = getattr(units, attr, None)
+        if val is not None:
+            total += int(val)
+    return total or None
 
 
 def get_generator(provider: str | None = None) -> Generator:
