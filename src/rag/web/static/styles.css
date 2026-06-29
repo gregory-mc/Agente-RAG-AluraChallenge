@@ -46,6 +46,9 @@ html, body {
   box-shadow: var(--shadow-lg);
 }
 
+/* ---------- Marca ---------- */
+.accentbar { height: 4px; flex: 0 0 auto; background: var(--grad); }
+
 /* ---------- Topbar ---------- */
 .topbar {
   display: flex;
@@ -68,10 +71,24 @@ html, body {
   box-shadow: 0 6px 16px rgba(124, 92, 246, .45);
 }
 .brand-text { min-width: 0; }
-.topbar h1 { font-size: 16.5px; margin: 0; font-weight: 700; letter-spacing: -.01em; }
-.topbar h1 span { color: var(--muted); font-weight: 600; }
+.topbar h1 { font-size: 16.5px; margin: 0; font-weight: 700; letter-spacing: -.01em; display: flex; align-items: center; gap: 8px; }
+.topbar h1 .tag {
+  font-size: 10px; font-weight: 700; letter-spacing: .03em; text-transform: uppercase;
+  color: var(--brand-1); background: #eef0ff; border: 1px solid #dcdffb;
+  padding: 2px 7px; border-radius: 999px;
+}
 .status { margin: 3px 0 0; font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
 .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 0 3px rgba(16,185,129,.18); }
+
+/* Lado derecho del header: wordmark de TechNova + botón */
+.brand-right { display: flex; align-items: center; gap: 14px; }
+.wordmark {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 14px; color: var(--ink); letter-spacing: -.01em;
+  padding-right: 14px; border-right: 1px solid var(--line);
+}
+.wordmark strong { font-weight: 800; }
+.nova { display: block; }
 
 .ghost {
   display: inline-flex; align-items: center; gap: 7px;
@@ -237,15 +254,24 @@ html, body {
 .typing .d:nth-child(3) { animation-delay: .4s; }
 @keyframes blink { 0%, 80%, 100% { opacity: .25; transform: scale(.8); } 40% { opacity: 1; transform: scale(1); } }
 
-/* ---------- AI notice ---------- */
+/* ---------- AI notice + firma de marca ---------- */
 .ai-notice {
   font-size: 12px; color: var(--muted);
   padding: 9px 20px;
   background: #fbfbfe;
   border-top: 1px solid var(--line);
-  display: flex; align-items: center; gap: 7px;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
 }
 .ai-notice strong { color: var(--ink); }
+.ai-text { display: inline-flex; align-items: baseline; gap: 6px; min-width: 0; }
+.brand-credit {
+  display: inline-flex; align-items: center; gap: 5px;
+  flex: 0 0 auto;
+  font-size: 12px; color: var(--muted); letter-spacing: -.01em;
+}
+.brand-credit strong { color: var(--ink); font-weight: 800; }
+
+@media (max-width: 600px) { .brand-credit { display: none; } }
 
 /* ---------- Composer ---------- */
 .composer {
@@ -381,5 +407,6 @@ html, body {
   .app { border: 0; }
   .msg { max-width: 100%; }
   .ghost-label { display: none; }
-  .topbar h1 span { display: none; }
+  .topbar h1 .tag { display: none; }
+  .wordmark { display: none; }
 }
