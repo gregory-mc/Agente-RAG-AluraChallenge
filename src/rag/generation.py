@@ -21,20 +21,30 @@ from dataclasses import dataclass, field
 from . import config
 from .retrieval import RetrievalResult
 
-# Instrucciones anti-alucinación. El modelo queda "anclado" al contexto.
+# Marcador que separa la respuesta de las sugerencias de seguimiento.
+FOLLOWUP_MARKER = "###SIGUIENTES###"
+
+# Instrucciones anti-alucinación + tono. El modelo queda "anclado" al contexto.
 SYSTEM_PROMPT = (
-    "Sos un asistente corporativo que responde preguntas de los colaboradores "
-    "usando EXCLUSIVAMENTE la información de los documentos internos que se te "
-    "entregan como CONTEXTO.\n\n"
+    "Sos un asistente corporativo cálido y servicial que ayuda a los "
+    "colaboradores respondiendo con la información de los documentos internos "
+    "que se te entregan como CONTEXTO.\n\n"
+    "Tono: amable, cercano y profesional. Saludá brevemente cuando quede natural, "
+    "usá un lenguaje claro y positivo, y cerrá ofreciendo seguir ayudando. Sin "
+    "exagerar ni inventar.\n\n"
     "Reglas estrictas:\n"
     "1. Respondé solo con datos presentes en el CONTEXTO. No uses conocimiento "
     "externo ni inventes datos, cifras, nombres ni fechas.\n"
     "2. Citá la fuente de cada afirmación con el marcador correspondiente [n], "
     "tal como aparece en el CONTEXTO (por ejemplo: 'El plan Business cuesta 18 "
     "USD [2].').\n"
-    "3. Si el CONTEXTO no contiene la información necesaria para responder, "
-    "respondé textualmente: '{no_answer}'. No intentes adivinar.\n"
-    "4. Sé claro y conciso, y respondé en el mismo idioma de la pregunta."
+    "3. Si el CONTEXTO no contiene la información necesaria, respondé con amabilidad "
+    "exactamente: '{no_answer}'. No intentes adivinar.\n"
+    "4. Sé claro y conciso, y respondé en el mismo idioma de la pregunta.\n"
+    "5. Al final, en una línea aparte, escribí exactamente '" + FOLLOWUP_MARKER + "' "
+    "y luego hasta 3 preguntas de seguimiento breves y útiles que el colaborador "
+    "podría querer hacer, una por línea con guion (-). Deben poder responderse con "
+    "los documentos internos. No las cites ni las numeres."
 )
 
 
@@ -44,6 +54,7 @@ class Answer:
 
     text: str
     sources: list[str] = field(default_factory=list)
+    suggestions: list[str] = field(default_factory=list)
     confidence: float | None = None
     no_answer: bool = False
     model: str = ""
@@ -93,13 +104,15 @@ class CohereGenerator(Generator):
             ],
             temperature=config.GEN_TEMPERATURE,
         )
-        text = _extract_text(resp).strip()
+        raw = _extract_text(resp).strip()
+        text, suggestions = _split_followups(raw)
         latency = int((time.perf_counter() - start) * 1000)
         no_answer = self._looks_like_no_answer(text)
         sources = [] if no_answer else _cited_sources(text, retrieval.sources)
         return Answer(
             text=text,
             sources=sources,
+            suggestions=suggestions,
             no_answer=no_answer,
             model=self.name,
             latency_ms=latency,
@@ -123,6 +136,23 @@ class EchoGenerator(Generator):
             f"{retrieval.context}"
         )
         return Answer(text=text, sources=list(retrieval.sources), model=self.name)
+
+
+_FOLLOWUP_SPLIT = re.compile(r"#{2,3}\s*SIGUIENTES\s*#{0,3}", re.IGNORECASE)
+
+
+def _split_followups(raw: str) -> tuple[str, list[str]]:
+    """Separa la respuesta de las preguntas de seguimiento (marcador FOLLOWUP)."""
+    parts = _FOLLOWUP_SPLIT.split(raw, maxsplit=1)
+    if len(parts) == 1:
+        return raw.strip(), []
+    answer = parts[0].strip()
+    suggestions: list[str] = []
+    for line in parts[1].splitlines():
+        line = line.strip().lstrip("-•*0123456789. ").strip()
+        if line:
+            suggestions.append(line)
+    return answer, suggestions[:3]
 
 
 _CITE_RE = re.compile(r"\[(\d+(?:\s*,\s*\d+)*)\]")

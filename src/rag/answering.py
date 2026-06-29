@@ -15,6 +15,14 @@ from . import config
 from .generation import Answer, Generator, get_generator
 from .retrieval import RetrievalResult, Retriever
 
+# Preguntas de arranque que se ofrecen cuando no hay respuesta, para orientar al
+# usuario hacia lo que el corpus sí cubre (áreas de TechNova).
+STARTER_SUGGESTIONS = [
+    "¿Qué planes y precios hay disponibles?",
+    "¿Qué funcionalidades ofrece el producto?",
+    "¿Cómo restablezco mi contraseña?",
+]
+
 
 def _confidence(retrieval: RetrievalResult) -> float | None:
     """Confianza = mejor similitud vectorial entre los fragmentos recuperados.
@@ -51,6 +59,7 @@ class RagAgent:
             return Answer(
                 text=config.NO_ANSWER_MESSAGE,
                 sources=[],
+                suggestions=list(STARTER_SUGGESTIONS),
                 confidence=confidence,
                 no_answer=True,
                 model=self.generator.name,

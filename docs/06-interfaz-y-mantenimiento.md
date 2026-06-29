@@ -45,7 +45,15 @@ singleton) y se reutiliza entre requests.
 - **Feedback**: botones 👍/👎 por respuesta → `POST /api/feedback`.
 - **Historial**: la conversación se guarda en memoria por `conversation_id` en el
   servidor y se persiste en `localStorage` del navegador (sobrevive recargas).
-- **Responsivo**: layout flex con unidades relativas; se adapta a móvil.
+- **Guía de la empresa**: botón flotante "Qué puedo preguntar" con una breve
+  descripción de TechNova y **pistas por área** (comercial, producto, soporte,
+  integraciones/datos, legal); cada pista es clickeable y lanza la pregunta.
+- **Sugerencias de seguimiento**: bajo cada respuesta se muestran hasta 3
+  preguntas siguientes (las genera el LLM, ver `docs/05`); cuando no hay respuesta
+  se ofrecen preguntas de arranque. Tocar una la envía.
+- **Responsivo**: layout flex con unidades relativas; se adapta a móvil. La guía
+  es un pill arriba a la izquierda en pantallas anchas y un botón circular (FAB)
+  en las angostas.
 
 ## 4. Mantenimiento y monitoreo
 

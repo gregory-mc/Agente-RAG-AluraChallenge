@@ -123,6 +123,16 @@ function renderMessage(m) {
 
     if (m.message_id) meta.appendChild(buildFeedback(m));
     if (meta.childNodes.length) col.appendChild(meta);
+
+    if (m.suggestions && m.suggestions.length) {
+      const sug = el("div", "followups");
+      m.suggestions.forEach((q) => {
+        const b = el("button", "followup", q);
+        b.addEventListener("click", () => ask(q));
+        sug.appendChild(b);
+      });
+      col.appendChild(sug);
+    }
   }
 
   wrap.appendChild(col);
@@ -205,6 +215,7 @@ async function ask(question) {
       role: "bot",
       content: data.answer,
       sources: data.sources,
+      suggestions: data.suggestions,
       confidence: data.confidence,
       no_answer: data.no_answer,
       message_id: data.message_id,
@@ -260,6 +271,9 @@ aboutBtn.addEventListener("click", (e) => {
   setAbout(aboutPanel.hidden);
 });
 aboutClose.addEventListener("click", () => setAbout(false));
+aboutPanel.querySelectorAll(".hint").forEach((h) =>
+  h.addEventListener("click", () => { setAbout(false); ask(h.textContent.trim()); })
+);
 document.addEventListener("click", (e) => {
   if (!aboutPanel.hidden && !aboutPanel.contains(e.target) && e.target !== aboutBtn) {
     setAbout(false);

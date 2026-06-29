@@ -328,10 +328,39 @@ html, body {
   font-size: 22px; line-height: 1; color: var(--faint); padding: 0 2px;
 }
 .about-close:hover { color: var(--ink); }
-.about-panel p { margin: 0 0 12px; font-size: 13.5px; line-height: 1.6; color: var(--muted); }
+.about-panel p { margin: 0 0 14px; font-size: 13.5px; line-height: 1.6; color: var(--muted); }
 .about-panel strong { color: var(--ink); }
-.about-steps { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 9px; }
-.about-steps li { font-size: 13px; line-height: 1.55; color: var(--muted); }
+.area { margin-bottom: 13px; }
+.area-title { display: flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 700; color: var(--ink); margin-bottom: 6px; }
+.area-title span { font-size: 14px; }
+.hint {
+  display: block; width: 100%; text-align: left;
+  border: 1px solid var(--line);
+  background: #fbfbfe;
+  color: var(--brand-1);
+  border-radius: 10px;
+  padding: 8px 11px;
+  font-size: 12.5px;
+  cursor: pointer;
+  margin-bottom: 6px;
+  transition: all .14s ease;
+}
+.hint:hover { background: #eef0ff; border-color: #d6d8f7; transform: translateX(2px); }
+
+/* Sugerencias de siguientes preguntas (bajo cada respuesta del agente) */
+.followups { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
+.followup {
+  border: 1px solid #dcdffb;
+  background: #f3f4ff;
+  color: var(--brand-1);
+  border-radius: 999px;
+  padding: 7px 13px;
+  font-size: 12.5px; font-weight: 500;
+  cursor: pointer;
+  transition: all .14s ease;
+}
+.followup::before { content: "↳ "; opacity: .6; }
+.followup:hover { background: #e7e9ff; border-color: #c5c9fb; transform: translateY(-1px); }
 
 /* ---------- Responsive ---------- */
 /* El pill top-left solo entra cuando hay margen lateral suficiente (app de 860px

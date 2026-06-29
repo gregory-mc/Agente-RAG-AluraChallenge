@@ -150,6 +150,10 @@ def _cmd_ask(args) -> int:
         print("\nFuentes:")
         for i, src in enumerate(result.sources, start=1):
             print(f"  [{i}] {src}")
+    if result.suggestions:
+        print("\nQuizás también quieras preguntar:")
+        for s in result.suggestions:
+            print(f"  • {s}")
     return 0
 
 

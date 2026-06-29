@@ -8,26 +8,43 @@
 </head>
 <body>
   <button id="about-btn" class="about-btn" aria-expanded="false" aria-controls="about-panel">
-    <span class="about-q">?</span> ¿Qué es el Agente RAG?
+    <span class="about-q">i</span> Qué puedo preguntar
   </button>
 
-  <div id="about-panel" class="about-panel" role="dialog" aria-label="Qué es el Agente RAG" hidden>
+  <div id="about-panel" class="about-panel" role="dialog" aria-label="Sobre TechNova y qué preguntar" hidden>
     <div class="about-head">
-      <h3>¿Qué es el Agente RAG?</h3>
+      <h3>TechNova · Qué puedo preguntar</h3>
       <button id="about-close" class="about-close" aria-label="Cerrar">×</button>
     </div>
-    <p>Un asistente <strong>RAG</strong> (Retrieval-Augmented Generation): responde
-      usando los <strong>documentos internos</strong> de la empresa, no conocimiento genérico.</p>
-    <ol class="about-steps">
-      <li><strong>Indexación.</strong> Los documentos se parten en fragmentos y se convierten
-        en vectores (embeddings de Cohere) en una base vectorial (Chroma).</li>
-      <li><strong>Recuperación.</strong> Tu pregunta se vectoriza, se buscan los fragmentos
-        más parecidos y se reordenan por relevancia (reranking).</li>
-      <li><strong>Generación.</strong> Un LLM (Cohere Command-R) redacta la respuesta usando
-        solo esos fragmentos y <strong>cita la fuente</strong>.</li>
-      <li><strong>Anti-alucinación.</strong> Si la confianza es baja, responde
-        “no encontré información” en vez de inventar.</li>
-    </ol>
+    <p><strong>TechNova</strong> es la plataforma SaaS de gestión de proyectos.
+      Soy el asistente interno: respondo con los documentos de la empresa y siempre
+      cito la fuente. Tocá una pista para preguntar:</p>
+
+    <div class="area">
+      <div class="area-title"><span>💼</span> Comercial</div>
+      <button class="hint">¿Cuánto cuesta el plan Pro?</button>
+      <button class="hint">¿Qué diferencia hay entre Business y Enterprise?</button>
+    </div>
+    <div class="area">
+      <div class="area-title"><span>🧩</span> Producto</div>
+      <button class="hint">¿Qué vistas de tablero ofrece TechNova?</button>
+      <button class="hint">¿Cómo funcionan las automatizaciones?</button>
+    </div>
+    <div class="area">
+      <div class="area-title"><span>🛟</span> Soporte</div>
+      <button class="hint">¿Cómo restablezco mi contraseña?</button>
+      <button class="hint">¿Cómo activo la verificación en dos pasos (2FA)?</button>
+    </div>
+    <div class="area">
+      <div class="area-title"><span>🔌</span> Integraciones y datos</div>
+      <button class="hint">¿Con qué herramientas se integra?</button>
+      <button class="hint">¿Qué eventos soportan los webhooks?</button>
+    </div>
+    <div class="area">
+      <div class="area-title"><span>📄</span> Legal</div>
+      <button class="hint">¿Qué dice la política de privacidad?</button>
+      <button class="hint">¿Cuáles son los términos de uso?</button>
+    </div>
   </div>
 
   <div class="app">

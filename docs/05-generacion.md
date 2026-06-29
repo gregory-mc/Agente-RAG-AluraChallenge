@@ -42,6 +42,17 @@ Tres mecanismos combinados:
 3. **"No sé" explícito.** Si el contexto no alcanza, la respuesta es
    exactamente `RAG_NO_ANSWER_MESSAGE`, en vez de inventar.
 
+## 2b. Tono y sugerencias de seguimiento
+
+El `SYSTEM_PROMPT` pide además un **tono amable y cercano** (saludo natural,
+lenguaje positivo, cierre ofreciendo ayuda) sin perder la fidelidad al contexto.
+
+Al final de la respuesta, el modelo escribe el marcador `###SIGUIENTES###` seguido
+de hasta 3 **preguntas de seguimiento** útiles. `generation._split_followups` las
+separa del texto visible y las devuelve en `Answer.suggestions`. Si no hay
+respuesta (umbral de confianza), `RagAgent` ofrece unas preguntas de arranque
+(`answering.STARTER_SUGGESTIONS`) para orientar al usuario.
+
 ## 3. Fuentes citadas
 
 `generation._cited_sources` parsea los marcadores `[n]` (incluye `[1,2]`) de la

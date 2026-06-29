@@ -64,6 +64,7 @@ class AskRequest(BaseModel):
 class AskResponse(BaseModel):
     answer: str
     sources: list[str]
+    suggestions: list[str]
     confidence: float | None
     no_answer: bool
     conversation_id: str
@@ -107,6 +108,7 @@ def ask(req: AskRequest) -> AskResponse:
     return AskResponse(
         answer=answer.text,
         sources=answer.sources,
+        suggestions=answer.suggestions,
         confidence=answer.confidence,
         no_answer=answer.no_answer,
         conversation_id=conversation_id,
