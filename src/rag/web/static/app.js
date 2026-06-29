@@ -22,9 +22,49 @@ function saveState() {
 }
 
 function shortSource(src) {
-  // Mostrar solo el nombre del archivo o el final de la URL.
   const parts = String(src).split(/[\\/]/);
   return parts[parts.length - 1] || src;
+}
+
+function escapeHtml(s) {
+  return String(s)
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+// Convierte el texto del modelo en HTML seguro:
+//  - escapa HTML, aplica **negritas** y viñetas "- ",
+//  - reemplaza los marcadores [n] / [n,m] por citas superíndice que enlazan a la fuente.
+function renderAnswer(text, sources) {
+  sources = sources || [];
+  const lines = escapeHtml(text).split("\n");
+  let html = "";
+  let inList = false;
+  for (let raw of lines) {
+    const line = raw.trim();
+    const isItem = /^[-*]\s+/.test(line);
+    if (isItem) {
+      if (!inList) { html += "<ul>"; inList = true; }
+      html += "<li>" + line.replace(/^[-*]\s+/, "") + "</li>";
+    } else {
+      if (inList) { html += "</ul>"; inList = false; }
+      if (line) html += line + "<br>";
+    }
+  }
+  if (inList) html += "</ul>";
+  html = html.replace(/<br>\s*$/, "");
+  html = html.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+
+  // [1] o [1,2] -> una insignia por número.
+  html = html.replace(/\[(\d+(?:\s*,\s*\d+)*)\]/g, (_, group) =>
+    group.split(",").map((n) => {
+      const num = n.trim();
+      const src = sources[parseInt(num, 10) - 1];
+      const title = src ? ` title="${escapeHtml(shortSource(src))}"` : "";
+      return `<sup class="cite"${title}>${num}</sup>`;
+    }).join("")
+  );
+  return html;
 }
 
 function confidenceLabel(c) {
@@ -47,17 +87,27 @@ function renderMessage(m) {
   if (empty) empty.style.display = "none";
 
   const wrap = el("div", `msg ${m.role}`);
-  const bubble = el("div", "bubble" + (m.no_answer ? " no-answer" : ""), m.content);
-  wrap.appendChild(bubble);
+  wrap.appendChild(el("div", "avatar", m.role === "bot" ? "✦" : "Tú"));
+
+  const col = el("div", "col");
+  const bubble = el("div", "bubble" + (m.no_answer ? " no-answer" : ""));
+  if (m.role === "bot") {
+    bubble.innerHTML = renderAnswer(m.content, m.sources);
+  } else {
+    bubble.textContent = m.content;
+  }
+  col.appendChild(bubble);
 
   if (m.role === "bot") {
     const meta = el("div", "meta");
 
     if (m.sources && m.sources.length) {
       const srcWrap = el("div", "sources");
-      m.sources.forEach((s) => {
-        const chip = el("span", "chip source", shortSource(s));
+      m.sources.forEach((s, i) => {
+        const chip = el("span", "src");
         chip.title = s;
+        chip.appendChild(el("span", "num", String(i + 1)));
+        chip.appendChild(el("span", "name", shortSource(s)));
         srcWrap.appendChild(chip);
       });
       meta.appendChild(srcWrap);
@@ -71,12 +121,11 @@ function renderMessage(m) {
       meta.appendChild(c);
     }
 
-    if (m.message_id) {
-      meta.appendChild(buildFeedback(m));
-    }
-    wrap.appendChild(meta);
+    if (m.message_id) meta.appendChild(buildFeedback(m));
+    if (meta.childNodes.length) col.appendChild(meta);
   }
 
+  wrap.appendChild(col);
   chat.appendChild(wrap);
   chat.scrollTop = chat.scrollHeight;
   return wrap;
@@ -116,11 +165,14 @@ function buildFeedback(m) {
 
 function showTyping() {
   const wrap = el("div", "msg bot typing");
+  wrap.appendChild(el("div", "avatar", "✦"));
+  const col = el("div", "col");
   const bubble = el("div", "bubble");
   bubble.appendChild(el("span", "d"));
   bubble.appendChild(el("span", "d"));
   bubble.appendChild(el("span", "d"));
-  wrap.appendChild(bubble);
+  col.appendChild(bubble);
+  wrap.appendChild(col);
   chat.appendChild(wrap);
   chat.scrollTop = chat.scrollHeight;
   return wrap;
@@ -193,6 +245,27 @@ document.getElementById("clear").addEventListener("click", () => {
   chat.querySelectorAll(".msg").forEach((n) => n.remove());
   if (empty) empty.style.display = "";
 });
+
+// Panel "¿Qué es el Agente RAG?" (botón flotante).
+const aboutBtn = document.getElementById("about-btn");
+const aboutPanel = document.getElementById("about-panel");
+const aboutClose = document.getElementById("about-close");
+
+function setAbout(open) {
+  aboutPanel.hidden = !open;
+  aboutBtn.setAttribute("aria-expanded", String(open));
+}
+aboutBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+  setAbout(aboutPanel.hidden);
+});
+aboutClose.addEventListener("click", () => setAbout(false));
+document.addEventListener("click", (e) => {
+  if (!aboutPanel.hidden && !aboutPanel.contains(e.target) && e.target !== aboutBtn) {
+    setAbout(false);
+  }
+});
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") setAbout(false); });
 
 // Rehidratar el historial guardado al cargar.
 state.messages.forEach(renderMessage);

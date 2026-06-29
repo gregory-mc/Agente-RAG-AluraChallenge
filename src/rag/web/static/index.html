@@ -7,37 +7,68 @@
   <link rel="stylesheet" href="/styles.css" />
 </head>
 <body>
+  <button id="about-btn" class="about-btn" aria-expanded="false" aria-controls="about-panel">
+    <span class="about-q">?</span> ¿Qué es el Agente RAG?
+  </button>
+
+  <div id="about-panel" class="about-panel" role="dialog" aria-label="Qué es el Agente RAG" hidden>
+    <div class="about-head">
+      <h3>¿Qué es el Agente RAG?</h3>
+      <button id="about-close" class="about-close" aria-label="Cerrar">×</button>
+    </div>
+    <p>Un asistente <strong>RAG</strong> (Retrieval-Augmented Generation): responde
+      usando los <strong>documentos internos</strong> de la empresa, no conocimiento genérico.</p>
+    <ol class="about-steps">
+      <li><strong>Indexación.</strong> Los documentos se parten en fragmentos y se convierten
+        en vectores (embeddings de Cohere) en una base vectorial (Chroma).</li>
+      <li><strong>Recuperación.</strong> Tu pregunta se vectoriza, se buscan los fragmentos
+        más parecidos y se reordenan por relevancia (reranking).</li>
+      <li><strong>Generación.</strong> Un LLM (Cohere Command-R) redacta la respuesta usando
+        solo esos fragmentos y <strong>cita la fuente</strong>.</li>
+      <li><strong>Anti-alucinación.</strong> Si la confianza es baja, responde
+        “no encontré información” en vez de inventar.</li>
+    </ol>
+  </div>
+
   <div class="app">
     <header class="topbar">
       <div class="brand">
-        <span class="logo" aria-hidden="true">📚</span>
-        <div>
-          <h1>Agente RAG corporativo</h1>
-          <p class="subtitle">Respuestas basadas en los documentos internos</p>
+        <span class="logo" aria-hidden="true">✦</span>
+        <div class="brand-text">
+          <h1>Agente RAG <span>corporativo</span></h1>
+          <p class="status"><span class="status-dot"></span> En línea · responde con tus documentos</p>
         </div>
       </div>
-      <button id="clear" class="ghost" title="Vaciar conversación">Nueva conversación</button>
+      <button id="clear" class="ghost" title="Vaciar conversación">
+        <span class="ghost-icon">↻</span><span class="ghost-label">Nueva</span>
+      </button>
     </header>
-
-    <div class="ai-notice" role="note">
-      🤖 Sos un asistente de <strong>IA</strong>. Las respuestas se generan a partir de
-      documentos internos y pueden contener errores: verificá las fuentes citadas.
-    </div>
 
     <main id="chat" class="chat" aria-live="polite">
       <div class="empty" id="empty">
-        <p>Hacé una pregunta sobre los documentos de la empresa.</p>
+        <div class="empty-badge">✦</div>
+        <p class="empty-intro">¡Hola! 👋 Preguntame lo que necesites sobre los documentos
+          internos de la empresa — siempre te respondo citando la fuente.</p>
+        <h2>¿En qué te ayudo?</h2>
         <div class="suggestions">
-          <button class="chip suggestion">¿Qué incluye el plan Business?</button>
-          <button class="chip suggestion">¿Cómo es el soporte para empresas grandes?</button>
-          <button class="chip suggestion">¿Con qué herramientas se integra?</button>
+          <button class="suggestion">¿Qué incluye el plan Business?</button>
+          <button class="suggestion">¿Cómo es el soporte para empresas grandes?</button>
+          <button class="suggestion">¿Con qué herramientas se integra?</button>
         </div>
       </div>
     </main>
 
+    <div class="ai-notice" role="note">
+      <span class="ai-ico">🤖</span> Respuestas generadas por <strong>IA</strong> a partir de documentos internos. Pueden contener errores — verificá las fuentes.
+    </div>
+
     <form id="composer" class="composer" autocomplete="off">
       <input id="input" type="text" placeholder="Escribí tu pregunta…" aria-label="Pregunta" />
-      <button id="send" type="submit">Enviar</button>
+      <button id="send" type="submit" aria-label="Enviar">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <path d="M3.4 20.4 21 12 3.4 3.6 3 10l12 2-12 2z" fill="currentColor"/>
+        </svg>
+      </button>
     </form>
   </div>
 
