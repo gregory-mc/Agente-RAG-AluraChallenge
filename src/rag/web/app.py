@@ -29,7 +29,7 @@ from ..answering import RagAgent
 
 STATIC_DIR = Path(__file__).resolve().parent / "static"
 
-app = FastAPI(title="Agente RAG corporativo", version="0.3.0")
+app = FastAPI(title="Techie - Asistente", version="0.3.0")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],

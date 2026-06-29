@@ -87,7 +87,7 @@ function renderMessage(m) {
   if (empty) empty.style.display = "none";
 
   const wrap = el("div", `msg ${m.role}`);
-  wrap.appendChild(el("div", "avatar", m.role === "bot" ? "✦" : "Tú"));
+  wrap.appendChild(el("div", "avatar", m.role === "bot" ? "👩‍💻" : "Tú"));
 
   const col = el("div", "col");
   const bubble = el("div", "bubble" + (m.no_answer ? " no-answer" : ""));
@@ -175,7 +175,7 @@ function buildFeedback(m) {
 
 function showTyping() {
   const wrap = el("div", "msg bot typing");
-  wrap.appendChild(el("div", "avatar", "✦"));
+  wrap.appendChild(el("div", "avatar", "👩‍💻"));
   const col = el("div", "col");
   const bubble = el("div", "bubble");
   bubble.appendChild(el("span", "d"));
