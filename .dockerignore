@@ -1,0 +1,21 @@
+# Reduce el contexto de build. OJO: NO ignorar data/documents ni chroma_db
+# (se copian a la imagen explícitamente en el Dockerfile).
+.venv-libs/
+.venv/
+venv/
+env/
+.git/
+.github/
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.env
+.DS_Store
+data/state/
+data/logs/
+data/feedback/
+docs/
+*.md
+requirements-local.txt

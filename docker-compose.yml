@@ -1,0 +1,23 @@
+# Para correr el agente localmente (o en una VM) con un solo comando.
+# En OCI Container Instances no se usa compose: se sube la imagen a OCIR y se
+# crea la instancia (ver docs/07-deploy-oci.md).
+services:
+  techie:
+    build: .
+    image: techie-asistente:local
+    container_name: techie
+    ports:
+      - "8000:8000"
+    environment:
+      # La key de Cohere se toma del entorno o de un archivo .env (no versionado).
+      COHERE_API_KEY: ${COHERE_API_KEY:?Define COHERE_API_KEY en .env o el entorno}
+      RAG_GENERATION_PROVIDER: ${RAG_GENERATION_PROVIDER:-cohere}
+    restart: unless-stopped
+    volumes:
+      # Persistencia de logs/feedback entre reinicios (en local/VM).
+      - techie-logs:/app/data/logs
+      - techie-feedback:/app/data/feedback
+
+volumes:
+  techie-logs:
+  techie-feedback:
