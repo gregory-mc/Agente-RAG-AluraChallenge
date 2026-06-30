@@ -59,7 +59,7 @@ jobs:
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
-          username: opc
+          username: ${{ secrets.SSH_USER || 'ubuntu' }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
