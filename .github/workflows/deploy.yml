@@ -1,0 +1,85 @@
+name: Build & Deploy to OCI VM (GHCR)
+
+on:
+  push:
+    branches: [main]
+    paths-ignore: ["docs/**", "**/*.md"]
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  # Convierte el nombre del repositorio a minúsculas para GHCR
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry (GHCR)
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Extract metadata for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=latest
+            type=sha,prefix=,suffix=,format=short
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to OCI VM via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ubuntu
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            # Si el directorio no existe, clonar el repositorio
+            if [ ! -d "$HOME/agente-rag" ]; then
+              git clone https://github.com/gregory-mc/Agente-RAG-AluraChallenge.git "$HOME/agente-rag"
+            fi
+            
+            cd "$HOME/agente-rag"
+            
+            # Obtener el último docker-compose.prod.yml del repositorio
+            git pull origin main
+            
+            # Asegurar la existencia de un archivo .env para que docker compose lee las variables
+            if [ ! -f .env ]; then
+              touch .env
+              echo "COHERE_API_KEY=tu_api_key_aqui" > .env
+              echo "Archivo .env creado. Por favor, edítalo en la VM con tu COHERE_API_KEY real."
+            fi
+            
+            # Descargar la imagen más reciente desde GHCR y levantar el servicio
+            docker compose -f docker-compose.prod.yml pull
+            docker compose -f docker-compose.prod.yml up -d
