@@ -91,10 +91,10 @@ El agente **Techie** cuenta con las siguientes capacidades listas para su uso:
 
 Para verificar el correcto funcionamiento del agente **Techie**, se disponen los siguientes recursos como evidencia en la carpeta `docs/images/`:
 
-### 📺 Demostración en Video
+### 📺 - Demostración en Video
 En el siguiente enlace o reproductor puedes observar al agente interactuando en tiempo real:
 
-![Demostración en Video](docs/images/demo_funcionamiento.mp4)
+[Demostración en Video](https://youtu.be/TrWOPEWfkb4)
 
 > [!NOTE]
 > Si el video no se reproduce automáticamente en el visor de GitHub, puedes descargarlo o reproducirlo directamente desde la ruta local [docs/images/demo_funcionamiento.mp4](docs/images/demo_funcionamiento.mp4).
@@ -103,10 +103,13 @@ En el siguiente enlace o reproductor puedes observar al agente interactuando en 
 A continuación se muestran dos capturas de pantalla clave:
 
 1. **Interfaz del Chat en Ejecución:** Detalle de la conversación donde se visualizan las fuentes citadas, las preguntas sugeridas de seguimiento y el nivel de confianza de la respuesta.
-   ![Captura de Pantalla - Chat](docs/images/captura_chat.png)
+   ![Captura de Pantalla - Chat](docs/images/captura_panel.png)
 
 2. **Panel de Métricas y Observabilidad:** Vista de la pantalla de métricas de uso y rendimiento para la administración corporativa de la IA.
-   ![Captura de Pantalla - Panel](docs/images/captura_panel.png)
+   ![Captura de Pantalla - Panel](docs/images/captura_chat.png)
+
+3. **Publicación en Oracle Cloud Infrastructure:** Vista del monitoreo de la instancia donde se deployó la aplicación (en OCI).
+<img width="1000" height="600" alt="image" src="https://github.com/user-attachments/assets/22f366db-3403-4e31-8184-26293d622168" />
 
 ---
 
@@ -195,7 +198,7 @@ El despliegue está automatizado mediante un pipeline de CI/CD con GitHub Action
 
 ### Diagrama de Arquitectura y Comunicación
 
-#### Esquema Visual Simplificado (No Técnico)
+#### Esquema Visual Simplificado
 A continuación se presenta una vista simplificada y amigable sobre cómo se procesan las preguntas del usuario y cómo interactúan las tecnologías principales:
 
 ![Esquema de Comunicación Simplificado](docs/images/techie_architecture_diagram.jpg)
@@ -259,14 +262,6 @@ graph TD
 Agradecemos el soporte y los lineamientos proporcionados por los siguientes programas para hacer posible este desarrollo:
 *   **Alura Latam**
 *   **Oracle Next Education (ONE)**
-
----
-
-## 💻 Personas Desarrolladoras del Proyecto
-
-*   **Gregory Morales**
-    *   GitHub: [@gregory-mc](https://github.com/gregory-mc)
-    *   Email: [gmoraleschinchay@gmail.com](mailto:gmoraleschinchay@gmail.com)
 
 ---
 
