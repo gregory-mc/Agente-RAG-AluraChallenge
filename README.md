@@ -6,6 +6,11 @@
 
 Este es un agente de Inteligencia Artificial corporativo basado en el patrón **RAG** (Retrieval-Augmented Generation) diseñado para la empresa **TechNova**. Su propósito es responder preguntas de los colaboradores de forma precisa, basándose exclusivamente en los documentos internos de la empresa.
 
+> [!IMPORTANT]
+> **🌐 ¡PROBAR DEMO EN VIVO!**  
+> El sistema se encuentra desplegado y listo para su evaluación. Puedes interactuar con el agente en tiempo real ingresando al siguiente enlace:  
+> 👉 **[http://136.248.241.172:8000/](http://136.248.241.172:8000/)**
+
 ---
 
 ### Insignias
