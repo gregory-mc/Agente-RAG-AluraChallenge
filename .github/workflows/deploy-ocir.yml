@@ -22,6 +22,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Check required OCI Secrets
+        run: |
+          if [ -z "${{ secrets.OCIR_REGION }}" ] || [ -z "${{ secrets.OCIR_NAMESPACE }}" ] || [ -z "${{ secrets.OCIR_USERNAME }}" ] || [ -z "${{ secrets.OCIR_TOKEN }}" ]; then
+            echo "::error::Faltan configurar los secretos de OCI en el repositorio (OCIR_REGION, OCIR_NAMESPACE, OCIR_USERNAME, OCIR_TOKEN)."
+            echo "Por favor, configúralos en Settings -> Secrets and variables -> Actions."
+            exit 1
+          fi
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
