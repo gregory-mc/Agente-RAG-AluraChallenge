@@ -5,7 +5,7 @@ __pycache__/
 venv/
 env/
 .env
-chroma_db/
+# chroma_db/
 data/state/
 data/logs/
 data/feedback/
