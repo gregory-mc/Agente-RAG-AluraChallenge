@@ -24,18 +24,19 @@ Este es un agente de Inteligencia Artificial corporativo basado en el patrón **
 1. [Descripción del Proyecto](#-descripción-del-proyecto)
 2. [Estado del Proyecto](#-estado-del-proyecto)
 3. [Demostración de Funciones y Aplicaciones](#-demostración-de-funciones-y-aplicaciones)
-4. [Acceso al Proyecto](#-acceso-al-proyecto)
+4. [Evidencia de Funcionamiento](#-evidencia-de-funcionamiento)
+5. [Acceso al Proyecto](#-acceso-al-proyecto)
    - [Prerrequisitos](#prerrequisitos)
    - [Instalación Local](#instalación-local)
    - [Configuración](#configuración)
    - [Ejecución e Ingesta](#ejecución-e-ingesta)
    - [Despliegue con Docker](#despliegue-con-docker)
    - [Despliegue en la Nube (OCI)](#despliegue-en-la-nube-oci)
-5. [Tecnologías Utilizadas](#-tecnologías-utilizadas)
+6. [Tecnologías Utilizadas](#-tecnologías-utilizadas)
    - [Diagrama de Arquitectura y Comunicación](#diagrama-de-arquitectura-y-comunicación)
-6. [Personas Contribuyentes](#-personas-contribuyentes)
-7. [Personas Desarrolladoras del Proyecto](#-personas-desarrolladoras-del-proyecto)
-8. [Licencia](#-licencia)
+7. [Personas Contribuyentes](#-personas-contribuyentes)
+8. [Personas Desarrolladoras del Proyecto](#-personas-desarrolladoras-del-proyecto)
+9. [Licencia](#-licencia)
 
 ---
 
@@ -83,6 +84,29 @@ El agente **Techie** cuenta con las siguientes capacidades listas para su uso:
     *   Registra las preguntas y respuestas en `data/logs/qa.jsonl` (incluye latencias, modelos, flags de no respuesta y confianza).
     *   Permite recolectar feedback de los usuarios (👍/👎) en `data/feedback/feedback.jsonl`.
     *   Expone métricas agregadas en tiempo real en `/api/metrics` y visualmente en `/panel`.
+
+---
+
+## 🎥 Evidencia de Funcionamiento
+
+Para verificar el correcto funcionamiento del agente **Techie**, se disponen los siguientes recursos como evidencia en la carpeta `docs/images/`:
+
+### 📺 Demostración en Video
+En el siguiente enlace o reproductor puedes observar al agente interactuando en tiempo real:
+
+![Demostración en Video](docs/images/demo_funcionamiento.mp4)
+
+> [!NOTE]
+> Si el video no se reproduce automáticamente en el visor de GitHub, puedes descargarlo o reproducirlo directamente desde la ruta local [docs/images/demo_funcionamiento.mp4](docs/images/demo_funcionamiento.mp4).
+
+### 📸 Capturas de Pantalla de la Aplicación
+A continuación se muestran dos capturas de pantalla clave:
+
+1. **Interfaz del Chat en Ejecución:** Detalle de la conversación donde se visualizan las fuentes citadas, las preguntas sugeridas de seguimiento y el nivel de confianza de la respuesta.
+   ![Captura de Pantalla - Chat](docs/images/captura_chat.png)
+
+2. **Panel de Métricas y Observabilidad:** Vista de la pantalla de métricas de uso y rendimiento para la administración corporativa de la IA.
+   ![Captura de Pantalla - Panel](docs/images/captura_panel.png)
 
 ---
 
@@ -171,7 +195,13 @@ El despliegue está automatizado mediante un pipeline de CI/CD con GitHub Action
 
 ### Diagrama de Arquitectura y Comunicación
 
-El siguiente diagrama de flujo e interacciones de componentes detalla cómo se comunican las distintas tecnologías en los entornos local y cloud:
+#### Esquema Visual Simplificado (No Técnico)
+A continuación se presenta una vista simplificada y amigable sobre cómo se procesan las preguntas del usuario y cómo interactúan las tecnologías principales:
+
+![Esquema de Comunicación Simplificado](docs/images/techie_architecture_diagram.jpg)
+
+#### Esquema Técnico de Flujo (Mermaid)
+El siguiente diagrama detalla técnicamente las interacciones de componentes y la comunicación en los entornos local y cloud:
 
 ```mermaid
 graph TD
