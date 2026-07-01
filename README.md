@@ -29,19 +29,20 @@ Este es un agente de Inteligencia Artificial corporativo basado en el patrón **
 1. [Descripción del Proyecto](#-descripción-del-proyecto)
 2. [Estado del Proyecto](#-estado-del-proyecto)
 3. [Demostración de Funciones y Aplicaciones](#-demostración-de-funciones-y-aplicaciones)
-4. [Evidencia de Funcionamiento](#-evidencia-de-funcionamiento)
-5. [Acceso al Proyecto](#-acceso-al-proyecto)
+4. [Ejemplos de Preguntas y Respuestas](#-ejemplos-de-preguntas-y-respuestas)
+5. [Evidencia de Funcionamiento](#-evidencia-de-funcionamiento)
+6. [Acceso al Proyecto](#-acceso-al-proyecto)
    - [Prerrequisitos](#prerrequisitos)
    - [Instalación Local](#instalación-local)
    - [Configuración](#configuración)
    - [Ejecución e Ingesta](#ejecución-e-ingesta)
    - [Despliegue con Docker](#despliegue-con-docker)
    - [Despliegue en la Nube (OCI)](#despliegue-en-la-nube-oci)
-6. [Tecnologías Utilizadas](#-tecnologías-utilizadas)
+7. [Tecnologías Utilizadas](#-tecnologías-utilizadas)
    - [Diagrama de Arquitectura y Comunicación](#diagrama-de-arquitectura-y-comunicación)
-7. [Personas Contribuyentes](#-personas-contribuyentes)
-8. [Personas Desarrolladoras del Proyecto](#-personas-desarrolladoras-del-proyecto)
-9. [Licencia](#-licencia)
+8. [Personas Contribuyentes](#-personas-contribuyentes)
+9. [Personas Desarrolladoras del Proyecto](#-personas-desarrolladoras-del-proyecto)
+10. [Licencia](#-licencia)
 
 ---
 
@@ -89,6 +90,48 @@ El agente **Techie** cuenta con las siguientes capacidades listas para su uso:
     *   Registra las preguntas y respuestas en `data/logs/qa.jsonl` (incluye latencias, modelos, flags de no respuesta y confianza).
     *   Permite recolectar feedback de los usuarios (👍/👎) en `data/feedback/feedback.jsonl`.
     *   Expone métricas agregadas en tiempo real en `/api/metrics` y visualmente en `/panel`.
+
+---
+
+## 💬 Ejemplos de Preguntas y Respuestas
+
+El agente **Techie** está entrenado para responder preguntas sobre la plataforma **TechNova** (gestión de proyectos, planes, soporte, APIs, etc.). A continuación se presentan ejemplos reales de preguntas que el agente puede responder y el tipo de respuestas generadas:
+
+### Ejemplo 1: Consulta sobre Planes y Precios (Comercial / Producto)
+*   **Pregunta del Usuario:**  
+    > *¿Cuáles son los planes de pago disponibles en TechNova y qué descuento tienen?*
+*   **Respuesta generada por el Agente:**  
+    > TechNova ofrece cuatro planes de pago además del plan gratuito:
+    > - **Starter:** $5 USD/usuario/mes, para equipos pequeños de hasta 15 usuarios.
+    > - **Pro:** $9 USD/usuario/mes, con usuarios ilimitados y acceso a la vista Gantt.
+    > - **Business:** $18 USD/usuario/mes, con reportes avanzados y roles personalizados.
+    > - **Enterprise:** Precio personalizado para grandes organizaciones, con SLA del 99.95% y CSM asignado.
+    > 
+    > Con el ciclo de pago anual, los planes tienen cerca de un **17% de descuento** (se pagan 10 meses por año).
+    > 
+    > *Fuentes citadas:* `comercial/planes_y_precios.xlsx`, `producto/base_conocimiento.md`
+
+### Ejemplo 2: Consulta sobre Soporte Técnico (Soporte)
+*   **Pregunta del Usuario:**  
+    > *¿Cómo contacto al equipo de soporte y cuánto tardan en responder?*
+*   **Respuesta generada por el Agente:**  
+    > Puedes contactar a soporte escribiendo un correo a `soporte@technova.com` o utilizando el chat dentro de la aplicación.
+    > 
+    > El tiempo de respuesta depende del plan contratado:
+    > - **Starter:** 72 horas.
+    > - **Pro:** 48 horas.
+    > - **Business:** 8 horas.
+    > - **Enterprise:** 1 hora (con SLA).
+    > 
+    > *Fuentes citadas:* `soporte/faq_soporte.html`
+
+### Ejemplo 3: Prevención de Alucinación (Fuera de Scope / Sin Confianza)
+*   **Pregunta del Usuario:**  
+    > *¿Cómo configuro la facturación automática para mi cuenta de Salesforce?*
+*   **Respuesta generada por el Agente (Anti-alucinación activa):**  
+    > No encontré esa información en los documentos disponibles.
+    > 
+    > *Fuentes citadas:* Ninguna (se activó el umbral de seguridad por falta de coincidencia en base vectorial).
 
 ---
 
