@@ -96,6 +96,8 @@ El agente **Techie** cuenta con las siguientes capacidades listas para su uso:
 
 Para verificar el correcto funcionamiento del agente **Techie**, se disponen los siguientes recursos como evidencia en la carpeta `docs/images/`:
 
+[https://techie-allura.viewdns.net/](https://techie-allura.viewdns.net/)
+
 ### 📺 - Demostración en Video
 En el siguiente enlace o reproductor puedes observar al agente interactuando en tiempo real:
 
