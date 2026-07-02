@@ -115,10 +115,33 @@ def ingest_source(
     return IngestResult(source.source_id, "indexed", chunks=added)
 
 
+def prune_orphaned_documents(manifest: dict[str, Any], indexer: Indexer) -> list[str]:
+    """Elimina del índice y del manifest los documentos locales que ya no existen en disco."""
+    to_delete = []
+    sources = manifest.get("sources", {})
+    for source_id, entry in list(sources.items()):
+        if entry.get("kind") != "url":
+            file_path = config.DOCUMENTS_DIR / source_id
+            if not file_path.exists():
+                to_delete.append(source_id)
+
+    for source_id in to_delete:
+        try:
+            indexer.delete_document(source_id)
+        except Exception:
+            pass
+        sources.pop(source_id, None)
+
+    return to_delete
+
+
 def ingest_all(*, indexer: Indexer | None = None, force: bool = False) -> list[IngestResult]:
     """Ingesta todas las fuentes (locales descubiertas + URLs registradas)."""
     indexer = indexer or get_indexer()
     manifest = manifest_mod.load()
+
+    # Limpiar los documentos locales huérfanos del índice y del manifest
+    prune_orphaned_documents(manifest, indexer)
 
     sources: list[Source] = list(discover_local_sources())
     for entry in manifest_mod.url_sources(manifest):
@@ -130,3 +153,4 @@ def ingest_all(*, indexer: Indexer | None = None, force: bool = False) -> list[I
     results = [ingest_source(s, manifest, indexer, force=force) for s in sources]
     manifest_mod.save(manifest)
     return results
+

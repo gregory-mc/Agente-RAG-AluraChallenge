@@ -35,6 +35,7 @@ html, body {
 }
 
 .app {
+  position: relative;
   max-width: 860px;
   margin: 0 auto;
   height: 100dvh;
@@ -410,3 +411,340 @@ html, body {
   .topbar h1 .tag { display: none; }
   .wordmark { display: none; }
 }
+
+/* ---------- Upload button & Drop Overlay ---------- */
+.composer #upload-btn {
+  flex: 0 0 auto;
+  width: 48px; height: 48px;
+  display: grid; place-items: center;
+  border: 1px solid var(--line);
+  background: #fbfbfe;
+  color: var(--muted);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: all .15s ease;
+}
+.composer #upload-btn:hover {
+  color: var(--brand-1);
+  border-color: #d6d8f7;
+  background: #fff;
+  transform: translateY(-1px);
+}
+.composer #upload-btn:disabled {
+  opacity: .5;
+  cursor: default;
+  transform: none;
+  box-shadow: none;
+}
+
+.drop-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(4px);
+  display: grid;
+  place-items: center;
+  padding: 30px;
+  animation: fadeIn 0.2s ease;
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.drop-box {
+  border: 2px dashed var(--brand-1);
+  border-radius: var(--radius);
+  background: #f4f5ff;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  text-align: center;
+  padding: 20px;
+}
+
+.drop-icon {
+  font-size: 48px;
+  animation: float 2s ease-in-out infinite;
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.drop-text {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.drop-subtext {
+  font-size: 13px;
+  color: var(--muted);
+  max-width: 320px;
+}
+
+.msg.bot .bubble.upload-status {
+  background: #f3f4ff;
+  border-color: #dcdffb;
+  color: var(--brand-1);
+}
+
+/* ---------- Panel de Documentos ---------- */
+.app {
+  overflow: hidden; /* Asegurar que el panel oculto no sobresalga */
+}
+
+.docs-panel {
+  position: absolute;
+  top: 72px;
+  right: -380px; /* Oculto por defecto */
+  bottom: 0;
+  width: 380px;
+  background: var(--surface);
+  border-left: 1px solid var(--line);
+  box-shadow: var(--shadow-lg);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.docs-panel.open {
+  right: 0;
+}
+
+.docs-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--line);
+  background: #fbfbfe;
+}
+
+.docs-head h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.docs-close {
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font-size: 22px;
+  line-height: 1;
+  color: var(--faint);
+  padding: 0 4px;
+}
+
+.docs-close:hover {
+  color: var(--ink);
+}
+
+.docs-upload-section {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+.docs-upload-box {
+  border: 2px dashed var(--line);
+  border-radius: 12px;
+  padding: 18px 12px;
+  text-align: center;
+  cursor: pointer;
+  background: #fbfbfe;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.docs-upload-box:hover {
+  border-color: var(--brand-1);
+  background: #f4f5ff;
+}
+
+.upload-icon {
+  font-size: 24px;
+}
+
+.upload-text {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--brand-1);
+}
+
+.upload-subtext {
+  font-size: 11px;
+  color: var(--muted);
+  max-width: 240px;
+  line-height: 1.4;
+}
+
+.docs-list-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.docs-list-container h4 {
+  margin: 0 0 12px;
+  font-size: 12.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--muted);
+}
+
+.docs-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.doc-item {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px 14px;
+  background: #fff;
+  transition: all 0.15s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
+}
+
+.doc-item:hover {
+  border-color: #dcdffb;
+  box-shadow: var(--shadow-sm);
+}
+
+.doc-item-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.doc-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  word-break: break-all;
+  line-height: 1.4;
+}
+
+.doc-delete-btn {
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  padding: 4px;
+  color: var(--faint);
+  border-radius: 6px;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.doc-delete-btn:hover {
+  color: var(--danger);
+  background: #fff0f0;
+}
+
+.doc-meta-info {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.doc-badge {
+  padding: 2px 6px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 10px;
+}
+
+.doc-badge.indexed {
+  background: #e6f7f0;
+  color: var(--ok);
+}
+
+.doc-badge.error {
+  background: #ffebeb;
+  color: var(--danger);
+}
+
+.doc-badge.unchanged {
+  background: #f0f0f4;
+  color: var(--muted);
+}
+
+.docs-footer {
+  padding: 14px 20px;
+  border-top: 1px solid var(--line);
+  background: #fbfbfe;
+  display: flex;
+  justify-content: center;
+}
+
+.reindex-btn {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid var(--brand-1);
+  background: var(--grad);
+  color: #fff;
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.reindex-btn:hover {
+  opacity: 0.95;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+  transform: translateY(-0.5px);
+}
+
+.reindex-btn:disabled {
+  background: var(--line);
+  border-color: var(--line);
+  color: var(--faint);
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+@media (max-width: 600px) {
+  .docs-panel {
+    width: 100%;
+    right: -100%;
+    top: 62px;
+  }
+}
+
+

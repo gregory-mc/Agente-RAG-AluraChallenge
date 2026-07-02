@@ -10,12 +10,9 @@ from rag.cache import load_cached_embedding, save_cached_embedding
 
 def _clean_dir():
     """Limpiar archivo caché temporal."""
-    try:
-        for f in Path(tempfile.gettempdir()).glob("rag_cache_*"):
-            if f.is_file():
-                f.unlink()
-    except Exception:
-        pass
+    from rag.cache import clear_cache
+    clear_cache()
+
 
 
 def test_cache_key_generates_different_hashes():
